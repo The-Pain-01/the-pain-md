@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08080d">
+  <title>THE PAIN MD | QR Code</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <script src="qr.js" defer></script>
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" href="index.html"><span class="brand-icon">P</span>THE <strong>PAIN</strong> MD</a>
+  <nav class="nav-links">
+    <a href="index.html">HOME</a>
+    <a href="about.html">ABOUT</a>
+    <a href="support.html">SUPPORT</a>
+  </nav>
+  <a class="nav-button" href="session.html">SESSION</a>
+</header>
+
+<main class="page-main">
+  <section class="page-heading">
+    <span class="eyebrow">WHATSAPP CONNECTION</span>
+    <h1>QR <span>CODE</span></h1>
+    <p>Generate a QR Code and scan it using WhatsApp.</p>
+  </section>
+
+  <section class="session-panel">
+    <div class="panel-icon">▦</div>
+    <h2>SCAN YOUR <span>QR CODE</span></h2>
+    <p class="center-text">Select the button below to request a new QR Code.</p>
+
+    <div class="qr-placeholder" id="qr-container">
+      <span>QR</span>
+      <small id="qr-placeholder-text">QR CODE WILL APPEAR HERE</small>
+    </div>
+
+    <button type="button" class="primary-button full-button" id="generate-qr">
+      GENERATE QR CODE
+    </button>
+
+    <div class="connection-status">
+      <span class="status-dot" id="qr-status-dot"></span>
+      <span id="qr-status">WAITING FOR BACKEND</span>
+    </div>
+
+    <div class="instruction">
+      <strong>HOW TO SCAN</strong>
+      <p>Open WhatsApp → Linked devices → Link a device → Scan the QR Code.</p>
+    </div>
+
+    <div class="notice">
+      <strong>NOTE</strong>
+      <p>The QR Code can only be generated after the backend API is connected.</p>
+    </div>
+  </section>
+
+  <a href="session.html" class="back-button">← BACK TO SESSION</a>
+</main>
+
+<footer class="footer">
+  <div class="footer-brand">THE <strong>PAIN</strong> MD</div>
+  <p>POWERED BY —͟͟͞͞𝐓𝐇𝐄 ➪ 𝐏𝐀𝐈𝐍 ᭄ ✦𝐓𝐃𝐋✦</p>
+  <small>© <span class="current-year"></span> THE PAIN MD.</small>
+</footer>
+</body>
+</html>

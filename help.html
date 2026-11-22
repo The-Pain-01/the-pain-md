@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +10,13 @@
 </head>
 <body>
 <header class="navbar">
-  <a class="brand" href="index.html"><span class="brand-icon">P</span>THE <strong>PAIN</strong> MD</a>
+  <a class="brand" href="index.html">
+    <span class="brand-icon">P</span>THE <strong>PAIN</strong> MD
+  </a>
   <nav class="nav-links">
-    <a href="index.html">HOME</a><a href="about.html">ABOUT</a><a href="support.html">SUPPORT</a>
+    <a href="index.html">HOME</a>
+    <a href="about.html">ABOUT</a>
+    <a href="support.html">SUPPORT</a>
   </nav>
   <a class="nav-button" href="session.html">CONNECT BOT</a>
 </header>
@@ -32,23 +35,45 @@
     <div class="faq-list">
       <details class="faq-item">
         <summary>How do I connect my WhatsApp?</summary>
-        <p>Open the Session page, choose QR Code or Pairing Code and follow the instructions. Actual connection requires the backend.</p>
+        <p>
+          Open the Session page, choose QR Code or Pairing Code
+          and follow the instructions. Actual connection requires
+          the backend service.
+        </p>
       </details>
+
       <details class="faq-item">
         <summary>Do I need to create an account?</summary>
-        <p>No website account or password is planned for accessing the platform.</p>
+        <p>
+          No website account or password is planned for accessing
+          the platform.
+        </p>
       </details>
+
       <details class="faq-item">
         <summary>Will my session be saved permanently?</summary>
-        <p>The planned system uses temporary sessions. Definitively ended sessions will have their temporary authentication data deleted by the backend.</p>
+        <p>
+          Closing the website or taking your phone offline does not end
+          an active bot session. The server keeps it running and attempts
+          to reconnect after temporary network interruptions.
+          Authentication data is deleted only after an explicit logout
+          or a definitive WhatsApp logout.
+        </p>
       </details>
+
       <details class="faq-item">
         <summary>Why is my QR Code not appearing?</summary>
-        <p>The frontend is currently a visual interface. QR generation requires the backend service.</p>
+        <p>
+          QR generation requires the backend service.
+          The frontend alone cannot create a WhatsApp session.
+        </p>
       </details>
+
       <details class="faq-item">
         <summary>Can I use the website on my phone?</summary>
-        <p>Yes. The interface is responsive and adapts to mobile screens.</p>
+        <p>
+          Yes. The interface is responsive and adapts to mobile screens.
+        </p>
       </details>
     </div>
   </section>

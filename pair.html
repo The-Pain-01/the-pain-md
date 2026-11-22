@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08080d">
+  <title>THE PAIN MD | Pairing Code</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <script src="pair.js" defer></script>
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" href="index.html"><span class="brand-icon">P</span>THE <strong>PAIN</strong> MD</a>
+  <nav class="nav-links">
+    <a href="index.html">HOME</a>
+    <a href="about.html">ABOUT</a>
+    <a href="support.html">SUPPORT</a>
+  </nav>
+  <a class="nav-button" href="session.html">SESSION</a>
+</header>
+
+<main class="page-main">
+  <section class="page-heading">
+    <span class="eyebrow">WHATSAPP CONNECTION</span>
+    <h1>PAIRING <span>CODE</span></h1>
+    <p>Enter your WhatsApp phone number to request a pairing code.</p>
+  </section>
+
+  <section class="session-panel">
+    <div class="panel-icon">⌗</div>
+    <h2>GENERATE YOUR <span>CODE</span></h2>
+
+    <form id="pairing-form">
+      <label for="phone">PHONE NUMBER WITH COUNTRY CODE</label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        placeholder="Example: 243XXXXXXXXX"
+        autocomplete="tel"
+        required
+      >
+      <button type="submit" class="primary-button full-button" id="pair-submit">
+        GENERATE PAIRING CODE
+      </button>
+    </form>
+
+    <div class="result-box">
+      <span class="result-label">YOUR PAIRING CODE</span>
+      <strong id="pairing-code">--------</strong>
+      <small id="pairing-message">Waiting for your request.</small>
+    </div>
+
+    <div class="connection-status">
+      <span class="status-dot" id="pair-status-dot"></span>
+      <span id="pair-status">WAITING FOR BACKEND</span>
+    </div>
+
+    <div class="instruction">
+      <strong>HOW TO CONNECT</strong>
+      <p>WhatsApp → Linked devices → Link a device → Link with phone number.</p>
+    </div>
+
+    <div class="notice">
+      <strong>IMPORTANT</strong>
+      <p>Never share your pairing code with another person. The real code requires the backend service.</p>
+    </div>
+  </section>
+
+  <a href="session.html" class="back-button">← BACK TO SESSION</a>
+</main>
+
+<footer class="footer">
+  <div class="footer-brand">THE <strong>PAIN</strong> MD</div>
+  <p>POWERED BY —͟͟͞͞𝐓𝐇𝐄 ➪ 𝐏𝐀𝐈𝐍 ᭄ ✦𝐓𝐃𝐋✦</p>
+  <small>© <span class="current-year"></span> THE PAIN MD.</small>
+</footer>
+</body>
+</html>

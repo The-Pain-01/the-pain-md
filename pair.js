@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("pairing-form");
   const phoneInput = document.getElementById("phone");
@@ -7,70 +6,250 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusElement = document.getElementById("pair-status");
   const statusDot = document.getElementById("pair-status-dot");
   const submitButton = document.getElementById("pair-submit");
+  const logoutButton = document.getElementById("logout-session");
+  const copyButton = document.getElementById("copy-pairing-code");
 
-  if (!form) return;
+  if (!form || !window.PainSessionApi) return;
 
-  // À remplacer par l'URL réelle du backend lors de son intégration.
-  const API_BASE = window.PAIN_API_URL || "";
+  let pollTimer = null;
+  let active = false;
+  let currentCode = "";
 
   function updateStatus(message, type = "waiting") {
-    if (statusElement) statusElement.textContent = message;
-    if (statusDot) statusDot.className = "status-dot " + type;
+    if (statusElement) {
+      statusElement.textContent = message;
+    }
+
+    if (statusDot) {
+      statusDot.className = `status-dot ${type}`;
+    }
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+    }
+
+    pollTimer = null;
+    active = false;
+  }
+
+  function displayState(data) {
+    const state =
+      data.status || data.connectionState || "starting";
+
+    updateStatus(
+      window.PainSessionApi.statusLabel(state),
+      state === "connected"
+        ? "online"
+        : ["failed", "logged_out", "ended"].includes(state)
+          ? "error"
+          : "waiting"
+    );
+
+    if (data.pairingCode && data.pairingCode !== currentCode) {
+      currentCode = data.pairingCode;
+      codeElement.textContent = currentCode;
+
+      messageElement.textContent =
+        "Enter this code in WhatsApp Linked Devices.";
+
+      if (copyButton) {
+        copyButton.hidden = false;
+      }
+    }
+
+    if (state === "connected") {
+      messageElement.textContent =
+        "WhatsApp is connected. The bot can now run on the server.";
+
+      submitButton.disabled = true;
+      submitButton.textContent = "BOT CONNECTED";
+    } else if (
+      ["logged_out", "ended", "failed"].includes(state)
+    ) {
+      stopPolling();
+
+      messageElement.textContent =
+        "This session has ended. Start a new session to connect again.";
+
+      submitButton.disabled = false;
+      submitButton.textContent = "START NEW SESSION";
+    }
+
+    if (logoutButton) {
+      logoutButton.hidden =
+        !data.sessionExists ||
+        ["logged_out", "ended"].includes(state);
+    }
+  }
+
+  async function poll() {
+    if (!active) return;
+
+    try {
+      const data = await window.PainSessionApi.current();
+      displayState(data);
+    } catch (error) {
+      updateStatus(error.message, "error");
+
+      // Ne pas supprimer une session pour une erreur réseau temporaire.
+    }
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const phone = phoneInput.value.trim().replace(/[\s()+-]/g, "");
+    const phone = phoneInput.value
+      .trim()
+      .replace(/[\s()+-]/g, "");
 
     if (!/^[0-9]{8,15}$/.test(phone)) {
       codeElement.textContent = "INVALID NUMBER";
-      messageElement.textContent = "Enter a valid number with country code.";
+
+      messageElement.textContent =
+        "Enter a valid number with country code.";
+
       updateStatus("INVALID PHONE NUMBER", "error");
       return;
     }
 
-    if (!API_BASE) {
-      codeElement.textContent = "NOT AVAILABLE";
-      messageElement.textContent = "The backend is not connected yet.";
-      updateStatus("BACKEND NOT CONNECTED", "error");
-      return;
+    submitButton.disabled = true;
+    submitButton.textContent = "STARTING SESSION...";
+
+    codeElement.textContent = "--------";
+    currentCode = "";
+
+    if (copyButton) {
+      copyButton.hidden = true;
     }
 
-    submitButton.disabled = true;
-    submitButton.textContent = "REQUESTING CODE...";
-    codeElement.textContent = "--------";
-    messageElement.textContent = "Contacting the connection service...";
-    updateStatus("REQUESTING PAIRING CODE");
+    messageElement.textContent =
+      "Contacting the session service...";
+
+    updateStatus("CREATING SESSION");
 
     try {
-      const response = await fetch(`${API_BASE}/api/session/pair`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ phone })
+      const created =
+        await window.PainSessionApi.create("pair");
+
+      if (logoutButton) {
+        logoutButton.hidden = false;
+      }
+
+      const result =
+        await window.PainSessionApi.requestPairingCode(phone);
+
+      if (result.pairingCode) {
+        currentCode = result.pairingCode;
+        codeElement.textContent = currentCode;
+
+        messageElement.textContent =
+          "Enter this code in WhatsApp Linked Devices.";
+
+        if (copyButton) {
+          copyButton.hidden = false;
+        }
+      }
+
+      displayState({
+        ...created,
+        ...result,
+        sessionExists: true
       });
 
-      const data = await response.json();
+      active = true;
 
-      if (!response.ok) {
-        throw new Error(data.message || "Pairing request failed.");
+      if (!pollTimer) {
+        pollTimer = setInterval(poll, 2500);
       }
 
-      if (!data.code || typeof data.code !== "string") {
-        throw new Error("The backend did not return a pairing code.");
-      }
+      await poll();
 
-      codeElement.textContent = data.code;
-      messageElement.textContent = "Enter this code in WhatsApp Linked Devices.";
-      updateStatus("PAIRING CODE RECEIVED", "online");
+      if (submitButton.textContent !== "BOT CONNECTED") {
+        submitButton.disabled = false;
+        submitButton.textContent = "REQUEST NEW PAIRING CODE";
+      }
     } catch (error) {
       codeElement.textContent = "ERROR";
-      messageElement.textContent = error.message || "Unable to generate the code.";
+      messageElement.textContent = error.message;
+
       updateStatus("REQUEST FAILED", "error");
-    } finally {
+
       submitButton.disabled = false;
-      submitButton.textContent = "GENERATE PAIRING CODE";
+      submitButton.textContent = "TRY AGAIN";
     }
   });
+
+  if (copyButton) {
+    copyButton.addEventListener("click", async () => {
+      if (!currentCode) return;
+
+      try {
+        await navigator.clipboard.writeText(currentCode);
+        messageElement.textContent = "Pairing code copied.";
+      } catch (_) {
+        messageElement.textContent =
+          "Copy unavailable. Select and copy the code manually.";
+      }
+    });
+  }
+
+  if (logoutButton) {
+    logoutButton.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        "Log out this WhatsApp session? " +
+        "The bot will stop and its authentication data will be deleted."
+      );
+
+      if (!confirmed) return;
+
+      logoutButton.disabled = true;
+
+      try {
+        await window.PainSessionApi.logout();
+
+        stopPolling();
+
+        currentCode = "";
+        codeElement.textContent = "--------";
+
+        if (copyButton) {
+          copyButton.hidden = true;
+        }
+
+        messageElement.textContent =
+          "The session has been logged out.";
+
+        updateStatus("SESSION LOGGED OUT", "error");
+
+        submitButton.disabled = false;
+        submitButton.textContent = "START NEW SESSION";
+
+        logoutButton.hidden = true;
+      } catch (error) {
+        updateStatus(error.message, "error");
+      } finally {
+        logoutButton.disabled = false;
+      }
+    });
+  }
+
+  // Restaurer l'état après rechargement.
+  (async () => {
+    try {
+      const data = await window.PainSessionApi.current();
+
+      if (data.sessionExists) {
+        active = true;
+        displayState(data);
+
+        if (!pollTimer) {
+          pollTimer = setInterval(poll, 2500);
+        }
+      }
+    } catch (_) {
+      updateStatus("READY TO START A SESSION");
+    }
+  })();
 });
